@@ -1,56 +1,44 @@
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
     image: postgres:15
-    container_name: postgres
-    restart: unless-stopped
+    container_name: lab_postgres
     environment:
       POSTGRES_DB: mydb
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mypassword
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    restart: always
 
   backend:
-    build:
-      context: ./backend
-    container_name: backend
-    restart: unless-stopped
+    build: ./backend
+    container_name: lab_backend
     environment:
-      PORT: 5000
       DATABASE_URL: postgresql://postgres:mypassword@postgres:5432/mydb
-      NODE_ENV: production
     depends_on:
       - postgres
-    ports:
-      - "5000:5000"
+    restart: always
 
   frontend:
-    build:
-      context: ./frontend
-      args:
-        VITE_API_URL: /api
-    container_name: frontend
-    restart: unless-stopped
+    build: ./frontend
+    container_name: lab_frontend
     depends_on:
       - backend
-    ports:
-      - "3000:3000"
+    restart: always
 
   nginx:
     image: nginx:alpine
-    container_name: nginx
-    restart: unless-stopped
+    container_name: lab_nginx
     ports:
       - "80:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - frontend
       - backend
+    restart: always
 
 volumes:
   postgres_data:
