@@ -12,7 +12,6 @@ jobs:
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@master
-
         with:
           host: ${{ secrets.SERVER_IP }}
           username: root
@@ -20,6 +19,5 @@ jobs:
           script: |
             cd /root/digitalocean-fullstack-template
             git pull
-            docker compose down
-            docker compose down
-            docker compose up -d --build
+            docker-compose down
+            docker-compose up -d --build
